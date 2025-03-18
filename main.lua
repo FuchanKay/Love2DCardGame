@@ -5,50 +5,51 @@ vec4 effect(vec4 color, Image image, vec2 uvs, vec2 screenCoords) {
     return pixel * color;
 }
 ]]
-local LEFT_CLICK = 1
-local RIGHT_CLICK = 2
+LEFT_CLICK = 1
+RIGHT_CLICK = 2
 
 function love.load()
+    MouseX = 0
+    MouseY = 0
     anim8 = require 'libraries.anim8'
-    cards = {}
-    cards.hasSelectedCard = false
     love.window.setTitle("Fuma Card")
     love.window.setMode(settings.windowWidth, settings.windowHeight)
     shader = love.graphics.newShader(shaderCode)
-    scenes = {}
-    scenes.cardScene = require 'card_scene'
-    currentScene = scenes.cardScene
+    Scenes = {}
+    Scenes.cardScene = require 'scenes.cardscene'
+    Scenes.newScene = require 'scenes.newscene'
+    CurrentScene = Scenes.cardScene
+    CurrentScene.load()
 end
 
 local t = 0
 function love.update(dt)
-    currentScene.update()
+    MouseX = love.mouse.getX()
+    MouseY = love.mouse.getY()
+    CurrentScene.update()
     t = t + dt
     -- effect:send("time", t)
 end
 
 function love.draw()
-    currentScene.draw()
+    CurrentScene.draw()
 end
 
 function love.keypressed(k)
     if k == "r" then love.event.quit "restart" end
-    currentScene.keyboardpressed(k)
+    CurrentScene.keyboardpressed(k)
 end
 
 function love.keyreleased(k)
-    currentScene.keyboardreleased(k)
+    CurrentScene.keyboardreleased(k)
 end
 
 function love.mousepressed(x, y, button)
-    currentScene.mousepressed(button)
+    MouseX = x
+    MouseY = y
+    CurrentScene.mousepressed(x, y, button)
 end
 
 function love.mousereleased(x, y, button, istouch, presses)
-    currentScene.mousereleased(x, y, button, istouch, presses)
-end
-
-function UpdateGlobals()
-    mouseX = love.mouse.getX()
-    mouseY = love.mouse.getY()
+    CurrentScene.mousereleased(x, y, button, istouch, presses)
 end
